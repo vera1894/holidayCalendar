@@ -6,6 +6,6 @@ target 'holidayCalendar' do
   use_frameworks!
 
     pod 'FSCalendar'
-    pod 'ProgressHUD'
+    
     pod 'PKHUD'
 end

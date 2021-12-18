@@ -1,0 +1,42 @@
+
+/* Class = "UILabel"; text = " 使用说明 "; ObjectID = "5FI-DY-MMg"; */
+"5FI-DY-MMg.text" = " 使用说明 ";
+
+/* Class = "UILabel"; text = "本应用现已支持浅色/深色模式自适应，将会根据当前系统的颜色模式自动启用明/暗 UI。"; ObjectID = "5hA-vb-wtN"; */
+"5hA-vb-wtN.text" = "本应用现已支持浅色/深色模式自适应，将会根据当前系统的颜色模式自动启用明/暗 UI。";
+
+/* Class = "UIButton"; configuration.title = "2"; ObjectID = "HEi-p6-x4T"; */
+"HEi-p6-x4T.configuration.title" = "2";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "HEi-p6-x4T"; */
+"HEi-p6-x4T.normalTitle" = "Button";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "LUC-KJ-jxZ"; */
+"LUC-KJ-jxZ.text" = "Label";
+
+/* Class = "UILabel"; text = "Label8888565656565656565656565656"; ObjectID = "Okg-vZ-zPf"; */
+"Okg-vZ-zPf.text" = "Label8888565656565656565656565656";
+
+/* Class = "UILabel"; text = "🧱"; ObjectID = "apA-qX-pmu"; */
+"apA-qX-pmu.text" = "🧱";
+
+/* Class = "UILabel"; text = "🌗"; ObjectID = "e4W-Bu-LAf"; */
+"e4W-Bu-LAf.text" = "🌗";
+
+/* Class = "UIButton"; configuration.title = "继续"; ObjectID = "f68-xg-Zeg"; */
+"f68-xg-Zeg.configuration.title" = "继续";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "f68-xg-Zeg"; */
+"f68-xg-Zeg.normalTitle" = "Button";
+
+/* Class = "UILabel"; text = "2022"; ObjectID = "gcW-QW-fyS"; */
+"gcW-QW-fyS.text" = "2022";
+
+/* Class = "UILabel"; text = "该图标表示当天为国家法定假日，当天放假，你可以点击此图标了解该假日的名称。"; ObjectID = "hpc-4h-AC3"; */
+"hpc-4h-AC3.text" = "该图标表示当天为国家法定假日，当天放假，你可以点击此图标了解该假日的名称。";
+
+/* Class = "UILabel"; text = "该图标表示当天为国家法定调班日，当天上班。"; ObjectID = "lEA-vE-tRs"; */
+"lEA-vE-tRs.text" = "该图标表示当天为国家法定调班日，当天上班。";
+
+/* Class = "UILabel"; text = "😂"; ObjectID = "sB3-OE-KDQ"; */
+"sB3-OE-KDQ.text" = "😂";

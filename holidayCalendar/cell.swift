@@ -21,6 +21,7 @@ class DIYCalendarCell: FSCalendarCell {
     
     //weak var circleImageView: UIImageView!
     weak var selectionLayer: CAShapeLayer!
+   // var circleLayer: UIView
     
     var selectionType: SelectionType = .none {
         didSet {
@@ -45,6 +46,16 @@ class DIYCalendarCell: FSCalendarCell {
         
     }
     
+    private func _updateColors(layer:CAShapeLayer,string:String) {
+        layer.fillColor = UIColor(named: string)?.cgColor
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+            self._updateColors(layer: selectionLayer, string: "layout")
+            self.setNeedsDisplay()
+    }
+    
     required init!(coder aDecoder: NSCoder!) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -57,6 +68,7 @@ class DIYCalendarCell: FSCalendarCell {
 
 
         if selectionType == .middle {
+           
             self.selectionLayer.path = UIBezierPath(rect: self.selectionLayer.bounds).cgPath
         }
         else if selectionType == .leftBorder {

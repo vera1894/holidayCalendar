@@ -10,10 +10,28 @@ import UIKit
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    var window: UIWindow?
 
+    var interfaceOrientations:UIInterfaceOrientationMask = .portrait{
+            didSet{
+                //强制设置成竖屏
+                if interfaceOrientations == .portrait{
+                    UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue,
+                                              forKey: "orientation")
+                }
+                
+            }
+        }
+    
+    //返回当前界面支持的旋转方向
+        func application(_ application: UIApplication, supportedInterfaceOrientationsFor
+            window: UIWindow?)-> UIInterfaceOrientationMask {
+            return interfaceOrientations
+        }
 
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+
         return true
     }
 

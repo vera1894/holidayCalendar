@@ -7,13 +7,14 @@
 
 import UIKit
 import FSCalendar
-import ProgressHUD
 import PKHUD
 
 //MARK: - 基础设定
 class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource{
     
     fileprivate let gregorian = Calendar(identifier: .gregorian)
+    
+    var everLaunched = false
     
     var selectedMonth : Int?
     var datesWithEvent = ["2022-01-01",
@@ -37,61 +38,21 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                           "2022-06-03","2022-06-04","2022-06-05",
                           "2022-09-10","2022-09-11","2022-09-12",
                           "2022-10-01","2022-10-02","2022-10-03","2022-10-04","2022-10-05","2022-10-06","2022-10-07",]
-    //去掉1.31,4.30的
-    var datesWithEventSelect = ["2022-01-01",
-                          "2022-01-02",
-                          "2022-01-03",
-                
-                          "2022-02-01",
-                          "2022-02-02",
-                          "2022-02-03",
-                          "2022-02-04",
-                          "2022-02-05",
-                          "2022-02-06",
-                          "2022-04-03",
-                          "2022-04-04",
-                          "2022-04-05",
-                         
-                          "2022-05-01",
-                          "2022-05-02",
-                          "2022-05-03",
-                          "2022-05-04",
-                          "2022-06-03","2022-06-04","2022-06-05",
-                          "2022-09-10","2022-09-11","2022-09-12",
-                          "2022-10-01","2022-10-02","2022-10-03","2022-10-04","2022-10-05","2022-10-06","2022-10-07",]
-    var datesWithEvent01 = ["2022-01-01",
-                          "2022-01-02",
-                          "2022-01-03"
-                ]
+  
+    
     var workdays = ["2022-01-29",
                     "2022-01-30",
                     "2022-04-02",
-                    "2022-04-30",
+                    "2022-04-24",
                     "2022-05-07",
                     "2022-10-08",
                     "2022-10-09",]
     
     var eventMonth = [1,2,4,5,6,9,10]
     
-    //位置在左边的
-   // var leftDays = ["2022-01-01","2022-02-01","2022-04-03","2022-05-01"]
-    
-    //字符串格式数组
-    //var holidaysOne = ["2022-01-01",
-                      // "2022-01-02",
-                      // "2022-01-03"]
-    //时间格式数组
-   // var holidaysOneDate: [Date] = []
-    
-    //往时间格式数组添加时间
-//    func holidaysConvert (dates:[String]){
-//        for i in dates{
-//            let date = timeToTimeStamp(time: i)
-//            holidaysOneDate.append(date)
-//    }
-//    }
-    
+    var dark = false
    
+    @IBOutlet weak var titleName: UILabel!
     @IBOutlet weak var fsCalendar: FSCalendar!
     
     @IBOutlet weak var monthList: monthCollection!
@@ -103,30 +64,30 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @objc func btn(sender: UIButton) {
         selectedMonth = sender.tag
         monthList.reloadData()
-        print(sender.tag+1)
+        //print(sender.tag+1)
     }
     
-    //左边箭头,点击切换月份
-    @IBAction func buttonLeft(_ sender: UIButton) {
-        let currentDay = fsCalendar.currentPage
-        var components = DateComponents()
-        let calendar = Calendar(identifier: .gregorian)
-        components.month = -1
-        let nextDay = calendar.date(byAdding: components, to: currentDay)!
-        fsCalendar.setCurrentPage(nextDay, animated: true)
-    }
-    
-    @IBOutlet weak var buttonLeft: UIButton!
-
-    @IBAction func buttonRight(_ sender: UIButton) {
-        let currentDay = fsCalendar.currentPage
-        var components = DateComponents()
-        let calendar = Calendar(identifier: .gregorian)
-        components.month = 1
-        let nextDay = calendar.date(byAdding: components, to: currentDay)!
-        fsCalendar.setCurrentPage(nextDay, animated: true)
-    }
-    @IBOutlet weak var buttonRight: UIButton!
+    //箭头,点击切换月份
+//    @IBAction func buttonLeft(_ sender: UIButton) {
+//        let currentDay = fsCalendar.currentPage
+//        var components = DateComponents()
+//        let calendar = Calendar(identifier: .gregorian)
+//        components.month = -1
+//        let nextDay = calendar.date(byAdding: components, to: currentDay)!
+//        fsCalendar.setCurrentPage(nextDay, animated: true)
+//    }
+//
+//    @IBOutlet weak var buttonLeft: UIButton!
+//
+//    @IBAction func buttonRight(_ sender: UIButton) {
+//        let currentDay = fsCalendar.currentPage
+//        var components = DateComponents()
+//        let calendar = Calendar(identifier: .gregorian)
+//        components.month = 1
+//        let nextDay = calendar.date(byAdding: components, to: currentDay)!
+//        fsCalendar.setCurrentPage(nextDay, animated: true)
+//    }
+//    @IBOutlet weak var buttonRight: UIButton!
     
     fileprivate lazy var dateFormatter2: DateFormatter = {
         let formatter = DateFormatter()
@@ -141,23 +102,50 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         return dfmatter.date(from: time)!
     }
     
-    
+    //gradient color
+//    override func viewDidLayoutSubviews() {
+//        let gradientLayer = CAGradientLayer()
+//        gradientLayer.frame = view.frame
+//        gradientLayer.colors = [UIColor(named: "y" )!.cgColor, UIColor(named: "o")!.cgColor]
+//        let gradientLocations:[NSNumber] = [0.0, 1.0]
+//        gradientLayer.locations = gradientLocations
+//
+//
+//        _updateColors(gradientLayer,at: 0)
+//
+//
+//
+//    }
 
+    //包装渐变色
+//    private func _updateColors(_ layer: CALayer, at idx: UInt32) {
+//
+//        view.layer.insertSublayer(layer,at:idx)
+//    }
+//    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+//        super.traitCollectionDidChange(previousTraitCollection)
+//
+//
+//        self.loadViewIfNeeded()
+//
+//
+//    }
+
+   
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //titleName.textColor = UIColor(named: "titleColor")
         
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.frame = view.bounds
-        gradientLayer.colors = [UIColor(named: "y"), UIColor(named: "o")]
-        view.layer.insertSublayer(gradientLayer,at: 0)
-        buttonLeft.setImage(UIImage(named: "arrowLeftHighlight"), for: .highlighted)
-        buttonLeft.setImage(UIImage(named: "arrowLeft"), for: .normal)
-        buttonRight.setImage(UIImage(named: "arrowRightHighlight"), for: .highlighted)
-        buttonRight.setImage(UIImage(named: "arrowRight"), for: .normal)
+        //view.backgroundColor =
+//        buttonLeft.setImage(UIImage(named: "arrowLeftHighlight"), for: .highlighted)
+//        buttonLeft.setImage(UIImage(named: "arrowLeft"), for: .normal)
+//        buttonRight.setImage(UIImage(named: "arrowRightHighlight"), for: .highlighted)
+//        buttonRight.setImage(UIImage(named: "arrowRight"), for: .normal)
         
+       
         
         //月份列表
         monthList.delegate = self
@@ -195,7 +183,23 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         
        // let scopeGesture = UIPanGestureRecognizer(target: fsCalendar, action: #selector(fsCalendar.handleScopeGesture(_:)));
         //fsCalendar.addGestureRecognizer(scopeGesture)
+        print("didload")
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
+        if UserDefaults.standard.bool(forKey: "everLaunched") != true{
+            self.performSegue(withIdentifier: "intro", sender: self)
+            UserDefaults.standard.set(!everLaunched, forKey:"everLaunched")
+        }
+            
+          
+            print("第一次已完成")
+      //  }
+        
+        
+    }
+    
     
     
     
@@ -226,7 +230,7 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
         
             if indexPath.item+1 == 1 || indexPath.item+1 == 2 || indexPath.item+1 == 4 || indexPath.item+1 == 5 || indexPath.item+1 == 6 || indexPath.item+1 == 9 ||
                 indexPath.item+1 == 10 {
-                print("i",indexPath.item+1)
+                //print("i",indexPath.item+1)
                 cell.round.layer.opacity = 1
             }else{
                 cell.round.layer.opacity = 0
@@ -239,9 +243,15 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
             let selectedDate = timeToTimeStamp(time: selectedMonthString)
             fsCalendar.setCurrentPage(selectedDate, animated: false)
             //点击变色
-            cell.text.backgroundColor = .white
+            cell.text.backgroundColor = .clear
+            cell.text.tintColor = UIColor.label
+            cell.backgroundColor = UIColor(named: "selectedMonth")
         }else{
-            cell.text.backgroundColor = UIColor(named: "f0.5")}
+            //未选中月份的文字及背景色
+            cell.text.backgroundColor = .clear
+            cell.text.tintColor = UIColor(named: "normalMonth")
+            cell.backgroundColor = UIColor(named: "f0.5")
+        }
         
         cell.round.clipsToBounds = true
         cell.round.layer.cornerRadius = 3
@@ -264,7 +274,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
                 
             }
             let cell = calendar.cell(for: date, at: monthPosition) as! DIYCalendarCell
-            print("选中日期",fsCalendar.selectedDates)
+            //print("选中日期",fsCalendar.selectedDates)
             //cell.selectionLayer.isHidden = false
             cell.selectionType = .single
             
@@ -540,12 +550,19 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
                 aroundCellColorChange(value:-6)
             }
             
+            //搬砖
+            if self.workdays.contains(key){
+                showNotice(string: "😅调班", imageString: "Clapping Hands Emoji")
+            }
+            
             //相邻的日期变化
             func aroundCellColorChange(value:Int){
                 let date = self.gregorian.date(byAdding: .day, value: value, to: date)!
                 let cell = calendar.cell(for: date, at: monthPosition) as! DIYCalendarCell
-                cell.selectionLayer.isHidden = false
                 cell.selectionType = .single
+                cell.selectionLayer.isHidden = false
+                
+                
             }
             
             //显示提示
@@ -557,68 +574,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
                 PKHUD.sharedHUD.hide(afterDelay: 1.0)
             }
             
-            
-            
-            
-            
-//            fsCalendar.visibleCells().forEach { (cell) in
-//                let diyCell = cell as! DIYCalendarCell
-//                let date = fsCalendar.date(for: cell)
-//                let position = fsCalendar.monthPosition(for: cell)
-//                //self.configure(cell: cell, for: date!, at: position)
-//                let key = self.dateFormatter2.string(from: date!)
-//                print("选中日期",fsCalendar.selectedDates)
-//                
-//                //if position == .current {
-//                //选择的日期里面包含指定日期
-//                if [self.datesWithEvent[0],self.datesWithEvent[1],self.datesWithEvent[2]].contains(key){
-//                    showHUD(text:"元旦")
-//                }
-//                else if [self.datesWithEvent[4],self.datesWithEvent[5],self.datesWithEvent[6],self.datesWithEvent[7],self.datesWithEvent[8],self.datesWithEvent[9]].contains(key){
-//                    showHUD(text:"春节")
-//                }
-//                else if [self.datesWithEvent[10],self.datesWithEvent[11],self.datesWithEvent[12]].contains(key){
-//                    showHUD(text:"清明节")
-//                }
-//                else if [self.datesWithEvent[14],self.datesWithEvent[15],self.datesWithEvent[16],self.datesWithEvent[17]].contains(key){
-//                    showHUD(text:"劳动节")
-//                }
-//                else if [self.datesWithEvent[18],self.datesWithEvent[19],self.datesWithEvent[20]].contains(key){
-//                    showHUD(text:"端午节")
-//                }
-//                else if [self.datesWithEvent[21],self.datesWithEvent[22],self.datesWithEvent[23]].contains(key){
-//                    showHUD(text:"中秋节")
-//                }
-//                else if [self.datesWithEvent[24],self.datesWithEvent[25],self.datesWithEvent[26],self.datesWithEvent[27],self.datesWithEvent[28],self.datesWithEvent[29],self.datesWithEvent[30]].contains(key){
-//                    showHUD(text:"国庆节")
-//                }
-//                
-//                //交互/通知方法
-//                func showHUD(text:String){
-//                    //添加层的样式为圆圈
-//                    diyCell.selectionType = .single
-//                    diyCell.selectionLayer.isHidden = false
-//                    ProgressHUD.show(text, icon: .holiday, interaction: true)
-//                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) {
-//                        UIView.animate(withDuration: 1){
-//                            diyCell.selectionLayer.isHidden = true
-//                        }
-//                    }
-//                }
-//                    //else{
-//                        //添加层的样式为五
-//                        //diyCell.selectionLayer.isHidden = true
-//                        //diyCell.selectionType = .rightBorder
-//                    
-//               // }
-//                //如果添加层的样式为无
-////                    if diyCell.selectionType == .none{
-////                        //隐藏添加层样式,退出
-////                        diyCell.selectionLayer.isHidden = true
-////                        return
-////                    }
-////
-//            }
+
  
            
         }
@@ -661,21 +617,11 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
 //        
 //        }
     func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, titleSelectionColorFor date: Date) -> UIColor? {
-        return UIColor.label
+        return UIColor.systemGray6
     }
     
     
-    
-    //定制表情-图片
-//    func calendar(_ calendar: FSCalendar, imageFor date: Date) -> UIImage? {
-//        let key = self.dateFormatter2.string(from: date)
-//        if self.datesWithEvent.contains(key){
-//            return UIImage(named: "smile")
-//        }else if self.workdays.contains(key){
-//            return UIImage(named: "brick")
-//        }
-//        return nil
-//    }
+
     
     func calendar(_ calendar: FSCalendar, titleFor date: Date) -> String? {
         let key = self.dateFormatter2.string(from: date)
@@ -697,61 +643,48 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
                 diyCell.selectionLayer.isHidden = true
             
         }
-        print("当前页面时间:",calendar.currentPage)
+        //print("当前页面时间:",calendar.currentPage)
         let month = Calendar.current.component(.month, from: calendar.currentPage)
         
         //获取滑动时当前月份值
-        print("month value",month)
+        //print("month value",month)
         selectedMonth = month-1
         monthList.reloadData()
     }
     
     
-//    func configure(cell: FSCalendarCell, for date: Date, at position: FSCalendarMonthPosition) {
-//
-//        let diyCell = (cell as! DIYCalendarCell)
-//
-//
-//        // Configure selection layer
-//        if position == .current {
-//
-//            var selectionType = SelectionType.none
-//
-//            if fsCalendar.selectedDates.contains(date) {
-//                let previousDate = self.gregorian.date(byAdding: .day, value: -1, to: date)!
-//                let nextDate = self.gregorian.date(byAdding: .day, value: 1, to: date)!
-//                if fsCalendar.selectedDates.contains(date) {
-//                    if fsCalendar.selectedDates.contains(previousDate) && fsCalendar.selectedDates.contains(nextDate) {
-//                        selectionType = .middle
-//                    }
-//                    else if fsCalendar.selectedDates.contains(previousDate) && fsCalendar.selectedDates.contains(date) {
-//                        selectionType = .rightBorder
-//                    }
-//                    else if fsCalendar.selectedDates.contains(nextDate) {
-//                        selectionType = .leftBorder
-//                    }
-//                    else {
-//                        selectionType = .single
-//                    }
-//                }
-//            }
-//            else {
-//                selectionType = .none
-//            }
-//            if selectionType == .none {
-//                diyCell.selectionLayer.isHidden = true
-//                return
-//            }
-//            diyCell.selectionLayer.isHidden = false
-//            diyCell.selectionType = selectionType
-//
-//        } else {
-//
-//            diyCell.selectionLayer.isHidden = true
-//        }
-//    }
+
     
 
     
 }
+
+
+//extension CAGradientLayer {
+//
+//    //获取彩虹渐变层
+//    func rainbowLayer() -> CAGradientLayer {
+//        //定义渐变的颜色（7种彩虹色）
+//        let gradientColors = [UIColor.red.cgColor,
+//                              UIColor.orange.cgColor,
+//                              UIColor.yellow.cgColor,
+//                              UIColor.green.cgColor,
+//                              UIColor.cyan.cgColor,
+//                              UIColor.blue.cgColor,
+//                              UIColor.purple.cgColor]
+//
+//        //定义每种颜色所在的位置
+//        let gradientLocations:[NSNumber] = [0.0, 0.17, 0.33, 0.5, 0.67, 0.83, 1.0]
+//
+//        //创建CAGradientLayer对象并设置参数
+//        self.colors = gradientColors
+//        self.locations = gradientLocations
+//
+//        //设置渲染的起始结束位置（横向渐变）
+//        self.startPoint = CGPoint(x: 0, y: 0)
+//        self.endPoint = CGPoint(x: 1, y: 0)
+//
+//        return self
+//    }
+//}
 

@@ -28,7 +28,8 @@ class NoticeView: PKHUDWideBaseView {
         super.didMoveToSuperview()
 //        label.text = "hhh"
 //        label.textAlignment = NSTextAlignment.center
-        label.backgroundColor = .white
+        label.backgroundColor = UIColor(named: "layout")
+        label.textColor = .label
         let voiceAttr = NSMutableAttributedString()
                 let imageAttachment = NSTextAttachment()
                 let voiceImage = UIImage(named: "imageString")
