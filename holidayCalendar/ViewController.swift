@@ -9,10 +9,13 @@ import UIKit
 import FSCalendar
 import PKHUD
 
+
 //MARK: - 基础设定
 class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource{
     
     fileprivate let gregorian = Calendar(identifier: .gregorian)
+    
+    private let fireworkController = ClassicFireworkController()
     
     var everLaunched = false
     
@@ -47,6 +50,17 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     "2022-05-07",
                     "2022-10-08",
                     "2022-10-09",]
+    //1.29 1.30
+    var twoDays = ["2022-01-29",
+                   "2022-01-30"
+    ]
+    //剩下的
+    var leftDays = ["2022-04-02",
+                    "2022-04-24",
+                    "2022-05-07",
+                    "2022-10-08",
+                    "2022-10-09"
+    ]
     
     var eventMonth = [1,2,4,5,6,9,10]
     
@@ -63,35 +77,21 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     @objc func btn(sender: UIButton) {
         selectedMonth = sender.tag
+       // self.fireworkController.addFireworks(count: 2, sparks: 8, around: sender)
         monthList.reloadData()
         //print(sender.tag+1)
     }
-    
-    //箭头,点击切换月份
-//    @IBAction func buttonLeft(_ sender: UIButton) {
-//        let currentDay = fsCalendar.currentPage
-//        var components = DateComponents()
-//        let calendar = Calendar(identifier: .gregorian)
-//        components.month = -1
-//        let nextDay = calendar.date(byAdding: components, to: currentDay)!
-//        fsCalendar.setCurrentPage(nextDay, animated: true)
-//    }
-//
-//    @IBOutlet weak var buttonLeft: UIButton!
-//
-//    @IBAction func buttonRight(_ sender: UIButton) {
-//        let currentDay = fsCalendar.currentPage
-//        var components = DateComponents()
-//        let calendar = Calendar(identifier: .gregorian)
-//        components.month = 1
-//        let nextDay = calendar.date(byAdding: components, to: currentDay)!
-//        fsCalendar.setCurrentPage(nextDay, animated: true)
-//    }
-//    @IBOutlet weak var buttonRight: UIButton!
+
     
     fileprivate lazy var dateFormatter2: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+    
+    var dateFormatter3: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd,EEE"
         return formatter
     }()
     
@@ -102,55 +102,27 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         return dfmatter.date(from: time)!
     }
     
-    //gradient color
-//    override func viewDidLayoutSubviews() {
-//        let gradientLayer = CAGradientLayer()
-//        gradientLayer.frame = view.frame
-//        gradientLayer.colors = [UIColor(named: "y" )!.cgColor, UIColor(named: "o")!.cgColor]
-//        let gradientLocations:[NSNumber] = [0.0, 1.0]
-//        gradientLayer.locations = gradientLocations
-//
-//
-//        _updateColors(gradientLayer,at: 0)
-//
-//
-//
-//    }
-
-    //包装渐变色
-//    private func _updateColors(_ layer: CALayer, at idx: UInt32) {
-//
-//        view.layer.insertSublayer(layer,at:idx)
-//    }
-//    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-//        super.traitCollectionDidChange(previousTraitCollection)
-//
-//
-//        self.loadViewIfNeeded()
-//
-//
-//    }
-
-   
-    
+    //由后台进入前台时选择今天
+//    @objc func applicationDidBecomeActive(notification: NSNotification) {
+//            if(self.isViewLoaded && (self.view.window != nil)){
+//                //fsCalendar.reloadData()
+//                fsCalendar.select(fsCalendar.today)
+//                //debugPrint("*进入前台--------由另一个程序回到当前程序应用*")
+//            }
+//        }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        //由后台进入前台时选择今天
+        //NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
         
-        //titleName.textColor = UIColor(named: "titleColor")
-        
-        //view.backgroundColor =
-//        buttonLeft.setImage(UIImage(named: "arrowLeftHighlight"), for: .highlighted)
-//        buttonLeft.setImage(UIImage(named: "arrowLeft"), for: .normal)
-//        buttonRight.setImage(UIImage(named: "arrowRightHighlight"), for: .highlighted)
-//        buttonRight.setImage(UIImage(named: "arrowRight"), for: .normal)
-        
-       
         
         //月份列表
         monthList.delegate = self
         monthList.dataSource = self
         monthList.backgroundColor = .none
+        //monthList.isAccessibilityElement = true
+        //monthList.accessibilityLabel = "2022年1-12月月份列表"
         
         
         //月日历
@@ -181,10 +153,12 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         fsCalendar.swipeToChooseGesture.isEnabled = false // Swipe-To-Choose
         fsCalendar.scrollDirection = .horizontal
         
-       // let scopeGesture = UIPanGestureRecognizer(target: fsCalendar, action: #selector(fsCalendar.handleScopeGesture(_:)));
-        //fsCalendar.addGestureRecognizer(scopeGesture)
-        print("didload")
+        
+        
+        
     }
+    
+    
     
     override func viewDidAppear(_ animated: Bool) {
         
@@ -192,9 +166,10 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             self.performSegue(withIdentifier: "intro", sender: self)
             UserDefaults.standard.set(!everLaunched, forKey:"everLaunched")
         }
+        fsCalendar.reloadData()
             
           
-            print("第一次已完成")
+         //   print("第一次已完成")
       //  }
         
         
@@ -226,14 +201,21 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
         cell.text.tag = indexPath.item
         cell.text.addTarget(self, action: #selector(btn(sender:)), for: .touchUpInside)
         cell.text.frame.size.width = cell.frame.width
+        cell.text.isAccessibilityElement = true
+        cell.text.accessibilityLabel = "\(indexPath.item + 1)月"
+        //cell.text.accessibilityViewIsModal = true
+        //cell.isAccessibilityElement = true
+        
         
         
             if indexPath.item+1 == 1 || indexPath.item+1 == 2 || indexPath.item+1 == 4 || indexPath.item+1 == 5 || indexPath.item+1 == 6 || indexPath.item+1 == 9 ||
                 indexPath.item+1 == 10 {
                 //print("i",indexPath.item+1)
                 cell.round.layer.opacity = 1
+                cell.text.accessibilityHint = "该月份有法定放假日"
             }else{
                 cell.round.layer.opacity = 0
+                cell.text.accessibilityHint = ""
             }
         
         
@@ -273,53 +255,59 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
                 cell.selectionLayer.isHidden = true
                 
             }
-            let cell = calendar.cell(for: date, at: monthPosition) as! DIYCalendarCell
-            //print("选中日期",fsCalendar.selectedDates)
-            //cell.selectionLayer.isHidden = false
-            cell.selectionType = .single
+          //  let cell = calendar.cell(for: date, at: monthPosition) as! DIYCalendarCell
+//            //print("选中日期",fsCalendar.selectedDates)
+//            //cell.selectionLayer.isHidden = false
+//            cell.selectionType = .single
             
+            
+            //cell.titleLabel.accessibilityLabel = "000"
             let key = self.dateFormatter2.string(from: date)
             
             // 元旦1/3
             if [self.datesWithEvent[0]].contains(key) {
-                showNotice(string: "🐯元旦", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🐯元旦", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:2)
+                
             }
             
             // 元旦2/3
             if [self.datesWithEvent[1]].contains(key){
-                showNotice(string: "🐯元旦", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🐯元旦", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:-1)
                 aroundCellColorChange(value:1)
+                
             }
             
             // 元旦3/3
             if [self.datesWithEvent[2]].contains(key){
-                showNotice(string: "🐯元旦", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🐯元旦", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:-1)
                 aroundCellColorChange(value:-2)
+                
             }
             
             //春节 1/1
             if [self.datesWithEvent[3]].contains(key){
-                showNotice(string: "🧧春节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🧧春节（腊月廿九）", imageString:"Clapping Hands Emoji",width: 200)
                 
             }
             
             //春节 1/6
             if [self.datesWithEvent[4]].contains(key){
-                showNotice(string: "🧧春节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🧧春节（正月初一）", imageString:"Clapping Hands Emoji",width: 200)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:2)
                 aroundCellColorChange(value:3)
                 aroundCellColorChange(value:4)
                 aroundCellColorChange(value:5)
+                
             }
             
             //春节 2/6
             if [self.datesWithEvent[5]].contains(key){
-                showNotice(string: "🧧春节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🧧春节（正月初二）", imageString:"Clapping Hands Emoji",width: 200)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:2)
                 aroundCellColorChange(value:3)
@@ -329,7 +317,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             //春节 3/6
             if [self.datesWithEvent[6]].contains(key){
-                showNotice(string: "🧧春节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🧧春节（正月初三）", imageString:"Clapping Hands Emoji",width: 200)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:2)
                 aroundCellColorChange(value:3)
@@ -339,7 +327,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             //春节 4/6
             if [self.datesWithEvent[7]].contains(key){
-                showNotice(string: "🧧春节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🧧春节（正月初四）", imageString:"Clapping Hands Emoji",width: 200)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:2)
                 aroundCellColorChange(value:-3)
@@ -349,7 +337,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             //春节 5/6
             if [self.datesWithEvent[8]].contains(key){
-                showNotice(string: "🧧春节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🧧春节（正月初五）", imageString:"Clapping Hands Emoji",width: 200)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:-4)
                 aroundCellColorChange(value:-3)
@@ -359,7 +347,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             //春节 6/6
             if [self.datesWithEvent[9]].contains(key){
-                showNotice(string: "🧧春节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🧧春节（正月初六）", imageString:"Clapping Hands Emoji",width: 200)
                 aroundCellColorChange(value:-5)
                 aroundCellColorChange(value:-4)
                 aroundCellColorChange(value:-3)
@@ -370,7 +358,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             //清明节 1/3
             if [self.datesWithEvent[10]].contains(key){
-                showNotice(string: "🏞️清明节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🏞️清明节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:2)
                 
@@ -378,26 +366,26 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             // 清明2/3
             if [self.datesWithEvent[11]].contains(key){
-                showNotice(string: "🏞️清明节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🏞️清明节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:-1)
                 aroundCellColorChange(value:1)
             }
             
             // 清明3/3
             if [self.datesWithEvent[12]].contains(key){
-                showNotice(string: "🏞️清明节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🏞️清明节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:-1)
                 aroundCellColorChange(value:-2)
             }
             
             //劳动节 1/1
             if [self.datesWithEvent[13]].contains(key){
-                showNotice(string: "🔆劳动节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🔆劳动节", imageString:"Clapping Hands Emoji",width: 100)
             }
             
             //劳动节 1/4
             if [self.datesWithEvent[14]].contains(key){
-                showNotice(string: "🔆劳动节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🔆劳动节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:2)
                 aroundCellColorChange(value:3)
@@ -405,7 +393,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             // 劳动节2/4
             if [self.datesWithEvent[15]].contains(key){
-                showNotice(string: "🔆劳动节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🔆劳动节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:-1)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:2)
@@ -413,7 +401,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             // 劳动节3/4
             if [self.datesWithEvent[16]].contains(key){
-                showNotice(string: "🔆劳动节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🔆劳动节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:-1)
                 aroundCellColorChange(value:-2)
                 aroundCellColorChange(value:1)
@@ -421,7 +409,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             // 劳动节4/4
             if [self.datesWithEvent[17]].contains(key){
-                showNotice(string: "🔆劳动节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🔆劳动节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:-1)
                 aroundCellColorChange(value:-2)
                 aroundCellColorChange(value:-3)
@@ -429,7 +417,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             //端午节 1/3
             if [self.datesWithEvent[18]].contains(key){
-                showNotice(string: "🚣端午节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🚣端午节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:2)
                 
@@ -437,21 +425,21 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             //端午节2/3
             if [self.datesWithEvent[19]].contains(key){
-                showNotice(string: "🚣端午节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🚣端午节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:-1)
                 aroundCellColorChange(value:1)
             }
             
             // 端午节3/3
             if [self.datesWithEvent[20]].contains(key){
-                showNotice(string: "🚣端午节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🚣端午节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:-1)
                 aroundCellColorChange(value:-2)
             }
             
             //中秋节 1/3
             if [self.datesWithEvent[21]].contains(key){
-                showNotice(string: "🥮中秋节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🥮中秋节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:2)
                 
@@ -459,21 +447,21 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             //中秋节2/3
             if [self.datesWithEvent[22]].contains(key){
-                showNotice(string: "🥮中秋节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🥮中秋节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:-1)
                 aroundCellColorChange(value:1)
             }
             
             //中秋节3/3
             if [self.datesWithEvent[23]].contains(key){
-                showNotice(string: "🥮中秋节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🥮中秋节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:-1)
                 aroundCellColorChange(value:-2)
             }
             
             //国庆节 1/7
             if [self.datesWithEvent[24]].contains(key){
-                showNotice(string: "🎇国庆节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🎇国庆节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:2)
                 aroundCellColorChange(value:3)
@@ -485,7 +473,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             //春节 2/7
             if [self.datesWithEvent[25]].contains(key){
-                showNotice(string: "🎇国庆节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🎇国庆节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:2)
                 aroundCellColorChange(value:3)
@@ -496,7 +484,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             //春节 3/7
             if [self.datesWithEvent[26]].contains(key){
-                showNotice(string: "🎇国庆节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🎇国庆节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:2)
                 aroundCellColorChange(value:3)
@@ -507,7 +495,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             //春节 4/7
             if [self.datesWithEvent[27]].contains(key){
-                showNotice(string: "🎇国庆节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🎇国庆节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:2)
                 aroundCellColorChange(value:-3)
@@ -518,7 +506,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             //春节 5/7
             if [self.datesWithEvent[28]].contains(key){
-                showNotice(string: "🎇国庆节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🎇国庆节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:1)
                 aroundCellColorChange(value:-4)
                 aroundCellColorChange(value:-3)
@@ -529,7 +517,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             
             //春节 6/7
             if [self.datesWithEvent[29]].contains(key){
-                showNotice(string: "🎇国庆节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🎇国庆节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:-5)
                 aroundCellColorChange(value:-4)
                 aroundCellColorChange(value:-3)
@@ -541,7 +529,7 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             //春节 7/7
             if [self.datesWithEvent[30]].contains(key){
                 
-                showNotice(string: "🎇国庆节", imageString:"Clapping Hands Emoji")
+                showNotice(string: "🎇国庆节", imageString:"Clapping Hands Emoji",width: 100)
                 aroundCellColorChange(value:-5)
                 aroundCellColorChange(value:-4)
                 aroundCellColorChange(value:-3)
@@ -551,8 +539,16 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             }
             
             //搬砖
-            if self.workdays.contains(key){
-                showNotice(string: "😅调班", imageString: "Clapping Hands Emoji")
+            if self.twoDays[0].contains(key){
+                showNotice(string: "😅调班(腊月廿七)", imageString: "Clapping Hands Emoji",width: 200)
+            }
+            if self.twoDays[1].contains(key){
+                showNotice(string: "😅调班(腊月廿八)", imageString: "Clapping Hands Emoji",width: 200)
+            }
+            if self.leftDays.contains(key){
+                
+                showNotice(string: "😅调班", imageString: "Clapping Hands Emoji",width: 100)
+                
             }
             
             //相邻的日期变化
@@ -566,12 +562,19 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             }
             
             //显示提示
-            func showNotice(string:String,imageString:String){
-                PKHUD.sharedHUD.contentView = NoticeView(string: string, imageString:imageString )
+            func showNotice(string:String,imageString:String,width:Double){
+                PKHUD.sharedHUD.contentView = NoticeView(string: string, imageString:imageString,width: width )
                 PKHUD.sharedHUD.show()
                 PKHUD.sharedHUD.dimsBackground = false
                 PKHUD.sharedHUD.userInteractionOnUnderlyingViewsEnabled = true
                 PKHUD.sharedHUD.hide(afterDelay: 1.0)
+                
+            }
+            
+            func soundNotice(string1 label:String,string2 hint:String){
+                let cell = calendar.cell(for: date, at: monthPosition) as! DIYCalendarCell
+                cell.titleLabel.accessibilityLabel = label
+                cell.titleLabel.accessibilityHint = hint
             }
             
 
@@ -590,15 +593,24 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             }
  
         }
-    
+    //MARK: - 日历数据
     // FSCalendarDataSource
     func calendar(_ calendar: FSCalendar, cellFor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell {
         
         let cell = fsCalendar.dequeueReusableCell(withIdentifier: "cell", for: date, at: position)  as! DIYCalendarCell
         cell.imageView.contentMode = .scaleAspectFit
         
-        
+        cell.titleLabel.accessibilityLabel = "\(self.dateFormatter3.string(from: date))"
+        let key = self.dateFormatter2.string(from: date)
+        if [self.datesWithEvent[0]].contains(key){
+            cell.titleLabel.accessibilityHint = "元旦假期第1天，共3天"
+        }
+        if [self.datesWithEvent[1]].contains(key){
+            cell.titleLabel.accessibilityHint = "元旦假期第2天，共3天"
+        }
         //cell.selectionType = .none
+        
+        
         return cell
     }
     
@@ -652,7 +664,10 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
         monthList.reloadData()
     }
     
-    
+    //农历
+//    func calendar(_ calendar: FSCalendar, subtitleFor date: Date) -> String? {
+//        return LunarFormatter().string(from: date)
+//    }
 
     
 

@@ -13,9 +13,10 @@ class NoticeView: PKHUDWideBaseView {
     let label = UILabel()
     var string = ""
     var imageString = ""
-    
-    init(string:String,imageString:String){
-        super.init()
+    //var noticeWidth = 100.0
+
+    init(string:String,imageString:String,width: Double){
+        super.init(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: width, height: 50.0)))
         self.string = string
         self.imageString = imageString
     }

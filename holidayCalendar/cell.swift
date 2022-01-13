@@ -19,18 +19,15 @@ enum SelectionType : Int {
 
 class DIYCalendarCell: FSCalendarCell {
     
-    //weak var circleImageView: UIImageView!
+   
     weak var selectionLayer: CAShapeLayer!
-   // var circleLayer: UIView
+    var titleReadText : String = "1"
     
     var selectionType: SelectionType = .none {
         didSet {
             
             setNeedsLayout()
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-//                self.selectionType = .none
-//            }
-//            setNeedsLayout()
+
         }
     }
     
@@ -42,7 +39,8 @@ class DIYCalendarCell: FSCalendarCell {
         selectionLayer.actions = ["hidden": NSNull()] 
         self.contentView.layer.insertSublayer(selectionLayer, below: self.titleLabel!.layer)
         self.selectionLayer = selectionLayer
-        
+        //self.isAccessibilityElement = true
+        self.titleLabel.accessibilityLabel = titleReadText
         
     }
     
